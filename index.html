@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nation Simulation</title>
+    <script src="nation-sim.js" defer></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        #nation-stats {
+            margin: 20px;
+        }
+        button {
+            padding: 10px;
+            margin: 10px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Nation Simulation</h1>
+
+    <div id="nation-creation">
+        <input type="text" id="nation-name" placeholder="Enter nation name">
+        <button onclick="startNation()">Create Nation</button>
+    </div>
+
+    <div id="nation-info" style="display: none;">
+        <h2 id="nation-title"></h2>
+        <div id="nation-stats"></div>
+        <button onclick="getNewIssue()">Get New Issue</button>
+    </div>
+
+    <div id="issue-box" style="display: none;">
+        <h3 id="issue-question"></h3>
+        <div id="issue-choices"></div>
+    </div>
+
+    <script>
+        function startNation() {
+            let name = document.getElementById("nation-name").value;
+            if (!name) {
+                alert("Please enter a nation name.");
+                return;
+            }
+            let nation = createNation(name);
+            showNation(nation);
+        }
+
+        function showNation(nation) {
+            document.getElementById("nation-creation").style.display = "none";
+            document.getElementById("nation-info").style.display = "block";
+            document.getElementById("nation-title").innerText = `Nation: ${nation.name}`;
+            updateStats(nation);
+        }
+
+        function updateStats(nation) {
+            document.getElementById("nation-stats").innerHTML = `
+                <p>Economy: ${nation.economy}</p>
+                <p>Military: ${nation.military}</p>
+                <p>Environment: ${nation.environment}</p>
+                <p>Civil Rights: ${nation.civilRights}</p>
+            `;
+        }
+
+        function getNewIssue() {
+            let issue = getRandomIssue();
+            document.getElementById("issue-box").style.display = "block";
+            document.getElementById("issue-question").innerText = issue.question;
+
+            let choicesDiv = document.getElementById("issue-choices");
+            choicesDiv.innerHTML = "";
+
+            issue.choices.forEach((choice, index) => {
+                let button = document.createElement("button");
+                button.innerText = choice.text;
+                button.onclick = function () {
+                    let updatedNation = applyDecision(index);
+                    updateStats(updatedNation);
+                    document.getElementById("issue-box").style.display = "none";
+                };
+                choicesDiv.appendChild(button);
+            });
+        }
+
+        // Load existing nation if available
+        let existingNation = getNation();
+        if (existingNation) {
+            showNation(existingNation);
+        }
+    </script>
+
+</body>
+</html>
